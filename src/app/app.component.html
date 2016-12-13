@@ -1,3 +1,13 @@
-<h1>
-  {{title}}
-</h1>
+<div class='container-fluid'>
+  <h1>
+    {{title}}
+  </h1>
+  <div class='row'>
+    <div class='col-sm-4 col-md-3'>
+      <app-menu (periodUpdated)='setPeriod($event)'></app-menu>
+    </div>
+    <div class='col-sm-8 col-md-9'>
+      <app-calendar [period]='period'></app-calendar>
+    </div>
+  </div>
+</div>

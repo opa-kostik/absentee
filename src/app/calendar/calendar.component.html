@@ -1,0 +1,25 @@
+<!--<div class="container">-->
+    <div class="dataTable" *ngIf='displayTable && displayTable.length > 0'>
+        <table cellspacing='0' cellpadding='0'>
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th *ngFor="let column of columns" 
+                        colspan=2 class='username'>
+                        {{column.nick}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of displayTable">
+                    <td class='period'>{{row.date | date:'dd-MMM-yyyy'}}</td>
+                    <td *ngFor="let cell of row.absData" 
+                        class='cell' 
+                        (click)='onCellClick(row.date,cell)'
+                        [style.background-color]='getBG(cell.value)'>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+<!--</div>-->

@@ -1,0 +1,11 @@
+$labelWidth: 55px;
+
+.input-group-addon{
+    width: $labelWidth;
+    max-width:$labelWidth;
+    min-width:$labelWidth;
+}
+
+button {
+    width: 100px;
+}
