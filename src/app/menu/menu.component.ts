@@ -6,14 +6,22 @@ import { UserService } from '../user.service';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
-  user;
+  
+  users;
+  userid;
   opt;
   @Output()periodUpdated = new EventEmitter();
   
   constructor(private userService:UserService) { }
-  
+    
   ngOnInit() {
-      this.user = this.userService.getCurrentUser();
+      debugger;
+      this.users = this.userService.getUsers();
+  }
+
+  getName(){
+    debugger;
+    return this.userService.getUser(this.userid).name;
   }
 
   setPeriod(data){

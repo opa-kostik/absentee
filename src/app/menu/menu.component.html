@@ -1,7 +1,14 @@
 <div class='menu-bar'>
   <p>
-    Welcome, you are logged in as <strong>{{user.name}}</strong>
+    Welcome <strong>{{getName()}}</strong>
   </p>
+  <p>Log in as
+    <select #name="ngModel" 
+            [(ngModel)]='userid' 
+            required>
+      <option *ngFor='let usr of users' [value]='usr.userid'>{{usr.name}}</option>
+    </select>
+  </p>  
   <hr>  
   <app-absence-type></app-absence-type>
   <hr>

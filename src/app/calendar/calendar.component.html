@@ -4,8 +4,10 @@
             <thead>
                 <tr>
                     <th>Period</th>
-                    <th *ngFor="let column of columns" 
-                        colspan=2 class='username'>
+                    <th *ngFor="let column of columns"
+                        colspan=2  
+                        [class.current]='column.userid == user.userid' 
+                        class='username'>
                         {{column.nick}}
                     </th>
                 </tr>
