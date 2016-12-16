@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class UserService {
+
   currentUser;
 
   users = [
@@ -30,21 +31,15 @@ export class UserService {
       {userid:'23', nick:'CN' , name:'Cynthia Nicholas'}
     ];
 
-    constructor(){}
-
     getUsers(){
       return this.users;
     }
 
-    setCurrentUser(userid){
+    setUser(userid){
       this.currentUser = this.users.filter(item => item.userid == userid)[0];
     }
 
-    getUser(userid){
-      return this.users.filter(item => item.nick == userid)[0];
-    }
-
-    getCurrentUser(){
+    getUser(){
       return this.currentUser;
     }
 }

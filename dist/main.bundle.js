@@ -25986,8 +25986,11 @@ var UserService = (function () {
     UserService.prototype.getUsers = function () {
         return this.users;
     };
-    UserService.prototype.getCurrentUser = function () {
-        return this.users[1];
+    UserService.prototype.setUser = function (userid) {
+        this.currentUser = this.users.filter(function (item) { return item.userid == userid; })[0];
+    };
+    UserService.prototype.getUser = function () {
+        return this.currentUser;
     };
     UserService = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["b" /* Injectable */])(), 
@@ -51104,7 +51107,7 @@ var AbsenceTypeComponent = (function () {
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'app-absence-type',
             template: __webpack_require__(601),
-            styles: [__webpack_require__(599)]
+            styles: [__webpack_require__(596)]
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__absence_type_service__["a" /* AbsenceTypeService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__absence_type_service__["a" /* AbsenceTypeService */]) === 'function' && _a) || Object])
     ], AbsenceTypeComponent);
@@ -51271,6 +51274,28 @@ var Calendar = (function () {
     Calendar.prototype.getData = function () {
         return this.calendarData;
     };
+    // getAbsensesOnDate(givenDate:Date, inDays:number){
+    //   this.calendarData.map(userData => {
+    //     userData.period
+    //       .filter(period => 
+    //               Number(period.date.substr(6)) === givenDate.getFullYear() && 
+    //                   Number(period.date.substr(3,2))-1 === givenDate.getMonth() && 
+    //                   Number(period.date.substr(0,2)) === givenDate.getDate() &&
+    //                   ( period.am === 'T' || 
+    //                     period.am === 'V' || 
+    //                     period.pm === 'T' || 
+    //                     period.pm === 'V' ) )
+    //     return {
+    //       userid: userData.userId,
+    //       am: p
+    //     }
+    //     userData.)
+    // }
+    Calendar.prototype.addDays = function (date, days) {
+        var result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
+    };
     return Calendar;
 }());
 
@@ -51302,29 +51327,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 var CalendarComponent = (function () {
     function CalendarComponent(calendarService, userService, absenceTypeService) {
-        var _this = this;
         this.calendarService = calendarService;
         this.userService = userService;
         this.absenceTypeService = absenceTypeService;
+    }
+    CalendarComponent.prototype.ngOnInit = function () {
+        var _this = this;
         this.calendarService.getCalendar()
             .then(function (data) {
             _this.calendar = new __WEBPACK_IMPORTED_MODULE_1__calendar__["a" /* Calendar */](data);
         });
         this.setColumns();
-        this.user = this.userService.getCurrentUser();
         this.selection = [];
-    }
-    CalendarComponent.prototype.ngOnInit = function () { };
+        this.clashes = [];
+    };
     CalendarComponent.prototype.setColumns = function () {
         this.columns = this.userService.getUsers();
-    };
-    CalendarComponent.prototype.getBG = function (value) {
-        switch (value) {
-            case 'V': return 'green';
-            case 'T': return 'grey';
-            case 'P': return 'purple';
-            default: return '#FAFAFA';
-        }
     };
     CalendarComponent.prototype.ngOnChanges = function (changes) {
         //set new start and end dates
@@ -51389,15 +51407,17 @@ var CalendarComponent = (function () {
         }
         return result;
     };
+    CalendarComponent.prototype.isCurrentUser = function (userid) {
+        return userid === this.userService.getUser().userid;
+    };
     CalendarComponent.prototype.onCellClick = function (date, cell) {
-        if (cell.userid === this.user.userid) {
+        if (this.isCurrentUser(cell.userid)) {
             var absType = this.absenceTypeService.getType();
             if (absType === undefined) {
                 console.log('absence type is not set!');
             }
             else {
                 cell.value = absType;
-                debugger;
                 var dateFmt = this.fmtDate(date);
                 this.collectUpdate({
                     userid: cell.userid,
@@ -51414,10 +51434,16 @@ var CalendarComponent = (function () {
         console.log(data);
         this.calendar.setValue(data);
     };
-    CalendarComponent.prototype.submitSelected = function () {
-        this.selection.forEach(function (item) {
-            console.log(item);
-        });
+    // detectClashes(date,cell){
+    //   let userid = this.userService.getUser().userid;
+    //   this.displayTable
+    //     .filter(item => item.date !== userid &&
+    //                     item.date)
+    //   //1. Same day
+    //   //2. Adjecent day
+    //   //3. Another absentiism is in 4 days
+    // }  
+    CalendarComponent.prototype.displayClashes = function () {
     };
     CalendarComponent.prototype.fmtDate = function (date) {
         var year = date.getFullYear();
@@ -51435,7 +51461,7 @@ var CalendarComponent = (function () {
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'app-calendar',
             template: __webpack_require__(603),
-            styles: [__webpack_require__(596)]
+            styles: [__webpack_require__(597)]
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__calendar_service__["a" /* CalendarService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__calendar_service__["a" /* CalendarService */]) === 'function' && _a) || Object, (typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_3__user_service__["a" /* UserService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_3__user_service__["a" /* UserService */]) === 'function' && _b) || Object, (typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__absence_type_service__["a" /* AbsenceTypeService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_4__absence_type_service__["a" /* AbsenceTypeService */]) === 'function' && _c) || Object])
     ], CalendarComponent);
@@ -51482,7 +51508,11 @@ var MenuComponent = (function () {
         this.periodUpdated = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["_7" /* EventEmitter */]();
     }
     MenuComponent.prototype.ngOnInit = function () {
-        this.user = this.userService.getCurrentUser();
+        this.userList = this.userService.getUsers();
+    };
+    MenuComponent.prototype.setUser = function (data) {
+        this.userService.setUser(data);
+        this.user = this.userService.getUser();
     };
     MenuComponent.prototype.setPeriod = function (data) {
         this.periodUpdated.emit(data);
@@ -51495,7 +51525,7 @@ var MenuComponent = (function () {
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'app-menu',
             template: __webpack_require__(604),
-            styles: [__webpack_require__(597)]
+            styles: [__webpack_require__(598)]
         }), 
         __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__user_service__["a" /* UserService */]) === 'function' && _a) || Object])
     ], MenuComponent);
@@ -51538,7 +51568,7 @@ var OptionsComponent = (function () {
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* Component */])({
             selector: 'app-options',
             template: __webpack_require__(605),
-            styles: [__webpack_require__(598)]
+            styles: [__webpack_require__(599)]
         }), 
         __metadata('design:paramtypes', [])
     ], OptionsComponent);
@@ -71041,61 +71071,61 @@ process.umask = function() { return 0; };
 /* 596 */
 /***/ function(module, exports) {
 
-module.exports = ".form-group {\n  margin-right: 30px; }\n\ntable {\n  border-collapse: separate; }\n\nth.username {\n  font-size: 10px;\n  width: 30px;\n  min-width: 30px;\n  text-align: center;\n  border: 1px solid grey;\n  border-radius: 5px; }\n\ntbody:before {\n  content: \"-\";\n  display: block;\n  line-height: 0.5em;\n  color: transparent; }\n\ntr:last-child {\n  border-bottom: 1px solid grey; }\n\ntd.period {\n  font-size: 12px;\n  width: 110px;\n  min-width: 110px; }\n\ntd.cell {\n  height: 15px;\n  width: 15px;\n  min-width: 15px;\n  max-height: 15px;\n  margin: 0;\n  padding: 0;\n  border-top: 1px solid grey; }\n  td.cell.selected {\n    background-color: blue !important; }\n  td.cell:first-child {\n    border-left: 5px solid grey; }\n  td.cell:nth-child(odd) {\n    border-right: 1px solid grey; }\n"
+module.exports = ""
 
 /***/ },
 /* 597 */
 /***/ function(module, exports) {
 
-module.exports = ".menu-bar {\n  width: 250px;\n  max-width: 250px;\n  min-width: 250px; }\n\n.btn-group {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle; }\n\ninput#start {\n  width: 150px; }\n\ninput#end {\n  width: 150px; }\n\ntd {\n  border: 1px solid #ADADAD;\n  padding: 3px 10px; }\n  td.vacation {\n    color: white;\n    background-color: #868686; }\n  td.training {\n    color: white;\n    background-color: #4b7704; }\n  td.holiday {\n    color: white;\n    background-color: #b220a3; }\n"
+module.exports = ".form-group {\n  margin-right: 30px; }\n\ntable {\n  border-collapse: separate;\n  table-layout: fixed; }\n\nthead tr {\n  display: block;\n  position: relative; }\n\nth.username {\n  font-size: 10px;\n  width: 30px;\n  min-width: 30px;\n  text-align: center;\n  border: 1px solid grey;\n  border-radius: 5px; }\n  th.username.current {\n    background-color: #5bc0de; }\n\ntbody {\n  display: block;\n  overflow: auto;\n  width: 100%;\n  height: 500px; }\n  tbody:before {\n    content: \"-\";\n    display: block;\n    line-height: 0.5em;\n    color: transparent; }\n\ntr:nth-child(1) td.cell {\n  border-top: 1px solid grey; }\n\ntd.period {\n  font-size: 12px; }\n\ntd.cell {\n  height: 15px;\n  width: 15px;\n  min-width: 15px;\n  max-height: 15px;\n  margin: 0;\n  padding: 0;\n  border-bottom: 1px solid grey; }\n  td.cell:nth-last-child(1) {\n    border-right: 1px solid grey; }\n  td.cell:nth-child(even) {\n    border-left: 1px solid grey; }\n  td.cell.pres {\n    background-color: #d4edf7; }\n  td.cell.vac {\n    background-color: #868686; }\n  td.cell.train {\n    background-color: #4b7704; }\n  td.cell.hol {\n    background-color: #b220a3; }\n\ntd:nth-child(1), th:nth-child(1) {\n  min-width: 100px; }\n"
 
 /***/ },
 /* 598 */
 /***/ function(module, exports) {
 
-module.exports = ".input-group-addon {\n  width: 55px;\n  max-width: 55px;\n  min-width: 55px; }\n\nbutton {\n  width: 100px; }\n"
+module.exports = ".menu-bar {\n  width: 250px;\n  max-width: 250px;\n  min-width: 250px; }\n\n.btn-group {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle; }\n\nselect {\n  width: 230px; }\n\ntd {\n  width: 230px;\n  padding: 3px 10px; }\n  td.available {\n    background-color: #d4edf7;\n    color: #868686;\n    border-top-left-radius: 5px;\n    border-top-right-radius: 5px; }\n  td.vacation {\n    color: white;\n    background-color: #868686; }\n  td.training {\n    color: white;\n    background-color: #4b7704; }\n  td.holiday {\n    color: white;\n    background-color: #b220a3;\n    border-bottom-left-radius: 5px;\n    border-bottom-right-radius: 5px; }\n"
 
 /***/ },
 /* 599 */
 /***/ function(module, exports) {
 
-module.exports = ""
+module.exports = ".input-group-addon {\n  width: 55px;\n  max-width: 55px;\n  min-width: 55px; }\n\nbutton {\n  width: 100px; }\n"
 
 /***/ },
 /* 600 */
 /***/ function(module, exports) {
 
-module.exports = ".menu, .calendar{\r\n    display: inline-block;\r\n}"
+module.exports = ""
 
 /***/ },
 /* 601 */
 /***/ function(module, exports) {
 
-module.exports = "<h4>Select absence type:</h4>\n<div class=\"btn-group\">\n  <button type='button' \n          (click)='setAbsenceType(\"V\")' \n          [class.active]='opt===\"V\"'\n          id='vacation' \n          class='btn btn-sm btn-info'>Vacation</button>\n  <button type='button' \n          (click)='setAbsenceType(\"T\")' \n          [class.active]='opt===\"T\"'\n          id='training' \n          class='btn btn-sm btn-info'>Training</button>\n  <button type='button'\n          (click)='setAbsenceType(\"\")' \n          [class.active]='opt===\"\"' \n          id='present'  \n          class='btn btn-sm btn-info'>Present</button>\n</div>"
+module.exports = "<h4>2. Select type of absence:</h4>\n<div class=\"btn-group\">\n  <button type='button' \n          (click)='setAbsenceType(\"V\")' \n          [class.active]='opt===\"V\"'\n          id='vacation' \n          class='btn btn-info'>Vacation</button>\n  <button type='button' \n          (click)='setAbsenceType(\"T\")' \n          [class.active]='opt===\"T\"'\n          id='training' \n          class='btn btn-info'>Training</button>\n  <button type='button'\n          (click)='setAbsenceType(\"\")' \n          [class.active]='opt===\"\"' \n          id='present'  \n          class='btn btn-info'>Present</button>\n</div>"
 
 /***/ },
 /* 602 */
 /***/ function(module, exports) {
 
-module.exports = "<div class='container-fluid'>\n  <h1>\n    {{title}}\n  </h1>\n  <div class='row'>\n    <div class='col-sm-4 col-md-3'>\n      <app-menu (periodUpdated)='setPeriod($event)'></app-menu>\n    </div>\n    <div class='col-sm-8 col-md-9'>\n      <app-calendar [period]='period'></app-calendar>\n    </div>\n  </div>\n</div>"
+module.exports = "<div class='container-fluid'>\n  <h2>\n    {{title}}\n  </h2>\n  <div class='row'>\n    <div class='col-sm-4 col-md-3'>\n      <app-menu (periodUpdated)='setPeriod($event)'></app-menu>\n    </div>\n    <div class='col-sm-8 col-md-9'>\n      <app-calendar [period]='period'></app-calendar>\n    </div>\n  </div>\n</div>"
 
 /***/ },
 /* 603 */
 /***/ function(module, exports) {
 
-module.exports = "<!--<div class=\"container\">-->\n    <div class=\"dataTable\" *ngIf='displayTable && displayTable.length > 0'>\n        <table cellspacing='0' cellpadding='0'>\n            <thead>\n                <tr>\n                    <th>Period</th>\n                    <th *ngFor=\"let column of columns\" \n                        colspan=2 class='username'>\n                        {{column.nick}}\n                    </th>\n                </tr>\n            </thead>\n            <tbody>\n                <tr *ngFor=\"let row of displayTable\">\n                    <td class='period'>{{row.date | date:'dd-MMM-yyyy'}}</td>\n                    <td *ngFor=\"let cell of row.absData\" \n                        class='cell' \n                        (click)='onCellClick(row.date,cell)'\n                        [style.background-color]='getBG(cell.value)'>\n                    </td>\n                </tr>\n            </tbody>\n        </table>\n    </div>\n<!--</div>-->\n"
+module.exports = "<div class=\"dataTable\" *ngIf='displayTable && displayTable.length > 0'>\r\n    <h4>\r\n        <span *ngIf='!clashes || clashes.length == 0'><strong>Tip!</strong>: Click on a corresponding cell to submit your type of absence</span>\r\n        <!--<span *ngIf='!clashes || clashes.length == 0'>\r\n            <strong>Tip top!</strong>\r\n        </span>-->\r\n        <span *ngIf='!!clashes && clashes.length > 0'>\r\n            <strong>{{clashes.length}} clashes detected\r\n                <button type='button' class='btn btn-lg' (click)=displayClashes()>More</button>\r\n            </strong>\r\n        </span>\r\n    </h4>\r\n    <table \r\n        cellspacing='0' \r\n        cellpadding='0'\r\n        class='fixed-header'>\r\n        <thead>\r\n            <tr>\r\n                <th>Period</th>\r\n                <th *ngFor=\"let column of columns\"\r\n                    colspan=2  \r\n                    [class.current]='isCurrentUser(column.userid)' \r\n                    class='username'>\r\n                    {{column.nick}}\r\n                </th>\r\n            </tr>\r\n        </thead>\r\n        <tbody>\r\n            <tr *ngFor=\"let row of displayTable\">\r\n                <td class='period'>{{row.date | date:'dd-MMM-yyyy'}}</td>\r\n                <td *ngFor=\"let cell of row.absData\" \r\n                    class='cell' \r\n                    (click)='onCellClick(row.date,cell)'\r\n                    [class.vac]='cell.value === \"V\"'\r\n                    [class.train]='cell.value === \"T\"'\r\n                    [class.hol]='cell.value === \"P\"'\r\n                    [class.pres]='cell.value === \"\"'>\r\n                </td>\r\n            </tr>\r\n        </tbody>\r\n    </table>\r\n</div>\r\n"
 
 /***/ },
 /* 604 */
 /***/ function(module, exports) {
 
-module.exports = "<div class='menu-bar'>\n  <p>\n    Welcome, you are logged in as <strong>{{user.name}}</strong>\n  </p>\n  <hr>  \n  <app-absence-type></app-absence-type>\n  <hr>\n  <div>\n      <app-options (periodUpdated)=setPeriod($event)></app-options>\n  </div>    \n  <hr>\n  \n  <h4>Legend:</h4>\n  <div>\n    <table class='menu-legend'>\n      <tr>\n        <td class='available'>Available</td>\n      </tr>\n      <tr>\n        <td class='vacation'>Vacation</td>\n      </tr>\n      <tr>\n        <td class='training'>Training</td>\n      </tr>\n      <tr>\n        <td class='holiday'>Public holiday</td>\n      </tr>\n    </table>\n  </div>\n</div>\n"
+module.exports = "<div class='menu-bar'>\r\n  <div>\r\n    <!--<h4>Welcome <strong>{{user?.name}}</strong></h4>-->\r\n    <h4>1. Make entries on behalf of (for demo purposes only):</h4>\r\n    <select [ngModel]='userid' name='userid' \r\n            class='form-control'\r\n            (ngModelChange) = 'setUser($event)'\r\n            required>\r\n      <option \r\n            *ngFor='let i of userList' \r\n            [value]='i.userid'>\r\n            ({{i.nick}}){{i.name}} \r\n      </option>\r\n    </select>\r\n  </div>\r\n  <hr>  \r\n  <app-absence-type></app-absence-type>\r\n  <hr>\r\n  <div>\r\n      <app-options (periodUpdated)=setPeriod($event)></app-options>\r\n  </div>    \r\n  <hr>\r\n  \r\n  <h4>Legend:</h4>\r\n  <div>\r\n    <table class='menu-legend'>\r\n      <tr>\r\n        <td class='available'>Available</td>\r\n      </tr>\r\n      <tr>\r\n        <td class='vacation'>Vacation</td>\r\n      </tr>\r\n      <tr>\r\n        <td class='training'>Training</td>\r\n      </tr>\r\n      <tr>\r\n        <td class='holiday'>Public holiday</td>\r\n      </tr>\r\n    </table>\r\n  </div>\r\n  <hr>\r\n</div>\r\n"
 
 /***/ },
 /* 605 */
 /***/ function(module, exports) {
 
-module.exports = "\r\n<h4>Select display period:</h4>\r\n<form (ngSubmit)=\"setPeriod()\" #calendarForm=\"ngForm\">\r\n    <div class=\"form-group\">\r\n        <div class=\"input-group\">\r\n            <span class=\"input-group-addon\">From</span>\r\n            <input type='date'\r\n                class=\"form-control\"\r\n                id=\"start\"\r\n                required\r\n                [(ngModel)]=\"start\" \r\n                name=\"start\"\r\n                #name=\"ngModel\">\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <div class=\"input-group\">\r\n            <span class=\"input-group-addon\">To</span>\r\n            <input type='date'\r\n                class=\"form-control\"\r\n                id=\"end\"\r\n                required\r\n                [(ngModel)]=\"end\" \r\n                name=\"end\"\r\n                #name=\"ngModel\">\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <button type=\"submit\" \r\n                class=\"btn btn-sm btn-info\"\r\n                [disabled]=\"!calendarForm.form.valid\">\r\n                Set period\r\n        </button>\r\n    </div>    \r\n</form>\r\n"
+module.exports = "\r\n<h4>3. Select display period:</h4>\r\n<form (ngSubmit)=\"setPeriod()\" #calendarForm=\"ngForm\">\r\n    <div class=\"form-group\">\r\n        <div class=\"input-group\">\r\n            <span class=\"input-group-addon\">From</span>\r\n            <input type='date'\r\n                class=\"form-control\"\r\n                id=\"start\"\r\n                required\r\n                [(ngModel)]=\"start\" \r\n                name=\"start\"\r\n                #name=\"ngModel\">\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group\">\r\n        <div class=\"input-group\">\r\n            <span class=\"input-group-addon\">To</span>\r\n            <input type='date'\r\n                class=\"form-control\"\r\n                id=\"end\"\r\n                required\r\n                [(ngModel)]=\"end\" \r\n                name=\"end\"\r\n                #name=\"ngModel\">\r\n        </div>\r\n    </div>\r\n    <div class=\"form-group set-period\">\r\n        <button type=\"submit\" \r\n                class=\"btn btn-lg btn-success\"\r\n                [disabled]=\"!calendarForm.form.valid\">\r\n                Proceed\r\n        </button>\r\n    </div>    \r\n</form>\r\n"
 
 /***/ },
 /* 606 */

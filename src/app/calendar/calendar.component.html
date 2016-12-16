@@ -1,27 +1,42 @@
-<!--<div class="container">-->
-    <div class="dataTable" *ngIf='displayTable && displayTable.length > 0'>
-        <table cellspacing='0' cellpadding='0'>
-            <thead>
-                <tr>
-                    <th>Period</th>
-                    <th *ngFor="let column of columns"
-                        colspan=2  
-                        [class.current]='column.userid == user.userid' 
-                        class='username'>
-                        {{column.nick}}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let row of displayTable">
-                    <td class='period'>{{row.date | date:'dd-MMM-yyyy'}}</td>
-                    <td *ngFor="let cell of row.absData" 
-                        class='cell' 
-                        (click)='onCellClick(row.date,cell)'
-                        [style.background-color]='getBG(cell.value)'>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-<!--</div>-->
+<div class="dataTable" *ngIf='displayTable && displayTable.length > 0'>
+    <h4>
+        <span *ngIf='!clashes || clashes.length == 0'><strong>Tip!</strong>: Click on a corresponding cell to submit your type of absence</span>
+        <!--<span *ngIf='!clashes || clashes.length == 0'>
+            <strong>Tip top!</strong>
+        </span>-->
+        <span *ngIf='!!clashes && clashes.length > 0'>
+            <strong>{{clashes.length}} clashes detected
+                <button type='button' class='btn btn-lg' (click)=displayClashes()>More</button>
+            </strong>
+        </span>
+    </h4>
+    <table 
+        cellspacing='0' 
+        cellpadding='0'
+        class='fixed-header'>
+        <thead>
+            <tr>
+                <th>Period</th>
+                <th *ngFor="let column of columns"
+                    colspan=2  
+                    [class.current]='isCurrentUser(column.userid)' 
+                    class='username'>
+                    {{column.nick}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of displayTable">
+                <td class='period'>{{row.date | date:'dd-MMM-yyyy'}}</td>
+                <td *ngFor="let cell of row.absData" 
+                    class='cell' 
+                    (click)='onCellClick(row.date,cell)'
+                    [class.vac]='cell.value === "V"'
+                    [class.train]='cell.value === "T"'
+                    [class.hol]='cell.value === "P"'
+                    [class.pres]='cell.value === ""'>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

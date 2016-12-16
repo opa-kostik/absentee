@@ -12,42 +12,34 @@ import { AbsenceTypeService } from '../absence-type.service';
   styleUrls: ['./calendar.component.scss']
 })
 export class CalendarComponent implements OnInit, OnChanges {
+
+  @Input()period;
   
   columns:Array<any>;
   calendar:Calendar;
+  clashes:Array<any>;
   displayTable;
-  @Input()period;
-  user;
   selection:Array<any>;
   
   constructor(
     private calendarService:CalendarService,
     private userService:UserService,
     private absenceTypeService:AbsenceTypeService) { 
-    
+  }  
+  
+  ngOnInit(){
     this.calendarService.getCalendar()
       .then(data => {
         this.calendar = new Calendar(data);
       });
     
     this.setColumns();
-    this.user = this.userService.getCurrentUser();
     this.selection = [];
-  }  
-  
-  ngOnInit(){}
+    this.clashes = [];
+  }
 
   setColumns(){
     this.columns = this.userService.getUsers();
-  }
-
-  getBG(value){
-    switch(value){
-      case 'V': return 'green';
-      case 'T': return 'grey';
-      case 'P': return 'purple';
-      default : return '#FAFAFA'; 
-    }
   }
 
   ngOnChanges(changes:SimpleChanges){
@@ -114,14 +106,17 @@ export class CalendarComponent implements OnInit, OnChanges {
     return result;
   }
 
+  isCurrentUser(userid){
+    return userid === this.userService.getUser().userid;  
+  }
+
   onCellClick(date,cell){
-    if(cell.userid === this.user.userid){
+    if(this.isCurrentUser(cell.userid)){
       let absType = this.absenceTypeService.getType();
       if (absType === undefined){
         console.log('absence type is not set!');
       }else{  
         cell.value = absType;
-        debugger;
         let dateFmt = this.fmtDate(date);
         this.collectUpdate({
             userid:cell.userid, 
@@ -140,11 +135,21 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.calendar.setValue(data);
   }
 
-  submitSelected(){
-    this.selection.forEach(item =>{
-      console.log(item);  
-    });
-  }  
+  // detectClashes(date,cell){
+    
+  //   let userid = this.userService.getUser().userid;
+  //   this.displayTable
+  //     .filter(item => item.date !== userid &&
+  //                     item.date)
+  //   //1. Same day
+  //   //2. Adjecent day
+  //   //3. Another absentiism is in 4 days
+
+  // }  
+
+  displayClashes(){
+
+  }
 
   fmtDate(date){
     let year = date.getFullYear();
@@ -154,4 +159,41 @@ export class CalendarComponent implements OnInit, OnChanges {
     day = day.length > 1 ? day : '0' + day;
     return day + '/' + month + '/' + year;
   }
+
+  // getClashData(startDate, endDate){
+    
+  //   let currentPeriod = this.getWorkingDays(startDate, endDate);
+  //   let displayTable = [];
+  //   if(!this.calendar) return displayTable;
+  //   let calendarData = this.calendar.getData();
+  //   for(let i = 0; i < currentPeriod.length; i++){
+  //     displayTable[i] = {date: currentPeriod[i], absData:[]};
+  //     for(let j = 0; j < calendarData.length; j++){
+  //       let values = calendarData[j].period.find(period  => {
+  //         return ( Number(period.date.substr(6)) === currentPeriod[i].getFullYear() && 
+  //                   Number(period.date.substr(3,2))-1 === currentPeriod[i].getMonth() && 
+  //                   Number(period.date.substr(0,2)) === currentPeriod[i].getDate() )
+  //       })
+  //       let am = '';
+  //       let pm = '';
+  //       if(values){
+  //         am = values.am;
+  //         pm = values.pm;
+  //       }
+  //       displayTable[i].absData[2*j] = {
+  //         userid: calendarData[j].userid, 
+  //         unit:'AM',
+  //         value: am
+  //       };
+  //       displayTable[i].absData[2*j+1] = {
+  //         userid: calendarData[j].userid, 
+  //         unit:'PM',
+  //         value: pm
+  //       };
+  //     }
+  //   }
+  //   return displayTable;
+  // }
+
+
 }

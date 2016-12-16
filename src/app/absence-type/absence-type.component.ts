@@ -3,7 +3,7 @@ import { AbsenceTypeService } from '../absence-type.service';
 @Component({
   selector: 'app-absence-type',
   templateUrl: './absence-type.component.html',
-  styleUrls: ['./absence-type.component.css']
+  styleUrls: ['./absence-type.component.scss']
 })
 export class AbsenceTypeComponent implements OnInit {
   opt;

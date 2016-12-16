@@ -1,4 +1,7 @@
-$basecolor: '#FAFAFA';
+@import '../menu/menu-base.scss';
+$table-border: 1px solid grey;
+$table_body_height: 500px;
+$column_one_width: 100px;
 
 .form-group {
     margin-right: 30px;
@@ -6,38 +9,56 @@ $basecolor: '#FAFAFA';
 
 table {
     border-collapse: separate;
+    //1
+    table-layout: fixed;
+    //1
 }
+
+//2
+thead {
+    tr {
+      display: block;
+      position: relative;
+    }
+  }
+//2
 
 th.username {
     font-size: 10px;
     width: 30px;
     min-width: 30px;
     text-align: center;
-    border: 1px solid grey;
+    border: $table-border;
     border-radius: 5px;
     &.current{
         background-color: #5bc0de;
     }
 }
 
-tbody:before {
-    content: "-";
+//4
+tbody {
     display: block;
-    line-height: 0.5em;
-    color: transparent;
+    overflow: auto;
+    width: 100%;
+    height: $table_body_height;
+//4
+    &:before {
+        content: "-";
+        display: block;
+        line-height: 0.5em;
+        color: transparent;
+    }
 }
 
 tr:nth-child(1){
     td.cell{
-        border-top: 1px solid grey;
+        border-top: $table-border;
     }
 }
 
 td {
     &.period {
         font-size: 12px;
-        width: 110px;
-        min-width:110px;
     }
     &.cell {
         height: 15px;
@@ -46,14 +67,16 @@ td {
         max-height:15px;
         margin: 0;
         padding: 0;
-        border-bottom: 1px solid grey;
-        &:nth-last-child(1){
-            border-right: 1px solid grey;
-        }
-        &:nth-child(even){
-            border-left: 1px solid grey;
-        }
+        border-bottom: $table-border;
+        &:nth-last-child(1){ border-right: $table-border;}
+        &:nth-child(even){ border-left: $table-border;}
+        &.pres{ background-color: $presColor; }
+        &.vac{ background-color: $vacColor; }
+        &.train{ background-color: $trainColor; }
+        &.hol{ background-color: $holColor; }
     }
 }
 
-
+td:nth-child(1), th:nth-child(1) { 
+    min-width: $column_one_width; 
+}

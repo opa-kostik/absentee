@@ -1,14 +1,18 @@
 <div class='menu-bar'>
-  <p>
-    Welcome <strong>{{getName()}}</strong>
-  </p>
-  <p>Log in as
-    <select #name="ngModel" 
-            [(ngModel)]='userid' 
+  <div>
+    <!--<h4>Welcome <strong>{{user?.name}}</strong></h4>-->
+    <h4>1. Make entries on behalf of (for demo purposes only):</h4>
+    <select [ngModel]='userid' name='userid' 
+            class='form-control'
+            (ngModelChange) = 'setUser($event)'
             required>
-      <option *ngFor='let usr of users' [value]='usr.userid'>{{usr.name}}</option>
+      <option 
+            *ngFor='let i of userList' 
+            [value]='i.userid'>
+            ({{i.nick}}){{i.name}} 
+      </option>
     </select>
-  </p>  
+  </div>
   <hr>  
   <app-absence-type></app-absence-type>
   <hr>
@@ -34,4 +38,5 @@
       </tr>
     </table>
   </div>
+  <hr>
 </div>

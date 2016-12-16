@@ -54,5 +54,29 @@ export class Calendar {
     
     return this.calendarData;
   }
+
+  // getAbsensesOnDate(givenDate:Date, inDays:number){
+  //   this.calendarData.map(userData => {
+  //     userData.period
+  //       .filter(period => 
+  //               Number(period.date.substr(6)) === givenDate.getFullYear() && 
+  //                   Number(period.date.substr(3,2))-1 === givenDate.getMonth() && 
+  //                   Number(period.date.substr(0,2)) === givenDate.getDate() &&
+  //                   ( period.am === 'T' || 
+  //                     period.am === 'V' || 
+  //                     period.pm === 'T' || 
+  //                     period.pm === 'V' ) )
+  //     return {
+  //       userid: userData.userId,
+  //       am: p
+  //     }
+  //     userData.)
+  // }
+
+  addDays(date, days) {
+    let result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
 }
 
