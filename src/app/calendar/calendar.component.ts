@@ -5,6 +5,7 @@ import { Period } from '../period';
 import { CalendarService } from '../calendar.service'
 import { UserService } from '../user.service'; 
 import { AbsenceTypeService } from '../absence-type.service';
+import { Utils } from '../utils.service';
 
 @Component({
   selector: 'app-calendar',
@@ -20,10 +21,12 @@ export class CalendarComponent implements OnInit, OnChanges {
   clashes:Array<any>;
   displayTable;
   selection:Array<any>;
-  
+  clashLevels;
+
   constructor(
     private calendarService:CalendarService,
     private userService:UserService,
+    private utils:Utils,
     private absenceTypeService:AbsenceTypeService) { 
   }  
   
@@ -36,6 +39,11 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.setColumns();
     this.selection = [];
     this.clashes = [];
+    this.clashLevels = [
+      {level:'danger',  days:0, display:false, description: "Same day"},
+      {level:'warning', days:1, display:false, description: "Adjacent"},
+      {level:'info',    days:4, display:false, description: "4 days"}
+    ];
   }
 
   setColumns(){
@@ -61,18 +69,17 @@ export class CalendarComponent implements OnInit, OnChanges {
 
   getDisplayData(startDate, endDate){
     
-    let currentPeriod = this.getWorkingDays(startDate, endDate);
+    let utils = this.utils;
+    let currentPeriod = this.utils.getWorkingDays(startDate, endDate);
     let displayTable = [];
     if(!this.calendar) return displayTable;
     let calendarData = this.calendar.getData();
     for(let i = 0; i < currentPeriod.length; i++){
       displayTable[i] = {date: currentPeriod[i], absData:[]};
       for(let j = 0; j < calendarData.length; j++){
-        let values = calendarData[j].period.find(period  => {
-          return ( Number(period.date.substr(6)) === currentPeriod[i].getFullYear() && 
-                    Number(period.date.substr(3,2))-1 === currentPeriod[i].getMonth() && 
-                    Number(period.date.substr(0,2)) === currentPeriod[i].getDate() )
-        })
+        let values = calendarData[j].period.find(
+          period => utils.datesEqual(utils.period2Date(period.date),currentPeriod[i])
+        )
         let am = '';
         let pm = '';
         if(values){
@@ -94,40 +101,6 @@ export class CalendarComponent implements OnInit, OnChanges {
     return displayTable;
   }
 
-  getWorkingDays(startDate:Date, endDate:Date):Date[]{
-
-    let result = [];
-    let currentDate = startDate;
-    while (currentDate <= endDate)  {  
-        let weekDay = currentDate.getDay();
-        if(weekDay != 0 && weekDay != 6) result.push(new Date(currentDate));
-        currentDate.setDate(currentDate.getDate()+1); 
-    }
-    return result;
-  }
-
-  isCurrentUser(userid){
-    return userid === this.userService.getUser().userid;  
-  }
-
-  onCellClick(date,cell){
-    if(this.isCurrentUser(cell.userid)){
-      let absType = this.absenceTypeService.getType();
-      if (absType === undefined){
-        console.log('absence type is not set!');
-      }else{  
-        cell.value = absType;
-        let dateFmt = this.fmtDate(date);
-        this.collectUpdate({
-            userid:cell.userid, 
-            date:dateFmt, 
-            unit:cell.unit,
-            value:cell.value
-          });
-      }
-    }
-  }
-
   collectUpdate(data){
     //find in update or add new 
     console.log('EXAMPLE SERVER UPDATE REQUEST');
@@ -135,65 +108,108 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.calendar.setValue(data);
   }
 
-  // detectClashes(date,cell){
-    
-  //   let userid = this.userService.getUser().userid;
-  //   this.displayTable
-  //     .filter(item => item.date !== userid &&
-  //                     item.date)
-  //   //1. Same day
-  //   //2. Adjecent day
-  //   //3. Another absentiism is in 4 days
-
-  // }  
-
-  displayClashes(){
-
+  isCurrentUser(userid){
+    return userid === this.userService.getCurrentUser().userid;  
   }
 
-  fmtDate(date){
-    let year = date.getFullYear();
-    let month = (1 + date.getMonth()).toString();
-    month = month.length > 1 ? month : '0' + month;
-    let day = date.getDate().toString();
-    day = day.length > 1 ? day : '0' + day;
-    return day + '/' + month + '/' + year;
+  onCellClick(date,cell){
+    if(!this.isCurrentUser(cell.userid)){
+      return;
+    }
+    let absType = this.absenceTypeService.getType();
+    if(cell.value === absType) return; 
+    
+    cell.value = absType;
+    let dateFmt = this.utils.date2Period(date);
+    this.collectUpdate({
+      userid:cell.userid, 
+      date:dateFmt, 
+      unit:cell.unit,
+      value:cell.value
+    });
+    
+    let clashes = this.detectClashes(date,cell);
+    if (clashes && clashes.length > 0){
+      clashes.forEach(item =>{
+        let index = this.clashes.findIndex(clash => {
+          return (
+            clash.level === item.level && 
+            clash.yourDate === item.yourDate &&
+            clash.userid === item.userid )
+        });
+        if (index > -1)
+          this.clashes[index].dates.push(item.date);
+        else{  
+          this.clashes.push({
+            level:item.level, 
+            yourDate: item.yourDate,
+            userid: item.userid, 
+            dates: [item.date]  
+          })
+        }
+      })
+    }
   }
 
-  // getClashData(startDate, endDate){
+  detectClashes(date,cell){
     
-  //   let currentPeriod = this.getWorkingDays(startDate, endDate);
-  //   let displayTable = [];
-  //   if(!this.calendar) return displayTable;
-  //   let calendarData = this.calendar.getData();
-  //   for(let i = 0; i < currentPeriod.length; i++){
-  //     displayTable[i] = {date: currentPeriod[i], absData:[]};
-  //     for(let j = 0; j < calendarData.length; j++){
-  //       let values = calendarData[j].period.find(period  => {
-  //         return ( Number(period.date.substr(6)) === currentPeriod[i].getFullYear() && 
-  //                   Number(period.date.substr(3,2))-1 === currentPeriod[i].getMonth() && 
-  //                   Number(period.date.substr(0,2)) === currentPeriod[i].getDate() )
-  //       })
-  //       let am = '';
-  //       let pm = '';
-  //       if(values){
-  //         am = values.am;
-  //         pm = values.pm;
-  //       }
-  //       displayTable[i].absData[2*j] = {
-  //         userid: calendarData[j].userid, 
-  //         unit:'AM',
-  //         value: am
-  //       };
-  //       displayTable[i].absData[2*j+1] = {
-  //         userid: calendarData[j].userid, 
-  //         unit:'PM',
-  //         value: pm
-  //       };
-  //     }
-  //   }
-  //   return displayTable;
-  // }
+    if(!this.calendar) return; 
+    
+    if(!this.isClash(cell.value)){
+      let thatDay = this.calendar.getCalLine(cell.userid).getPeriod(date);
+      if(cell.unit === 'AM' && !this.isClash(thatDay.pm) ||
+         cell.unit === 'PM' && !this.isClash(thatDay.am) ){
+        this.clashes = this.clashes.filter(item => item.yourDate !== date);
+      }
+      return;
+    }
+    let userid = this.userService.getCurrentUser().userid;
+    let startDate = this.utils.addDays(date,-4);
+    let endDate = this.utils.addDays(date,4); 
+    let watchPeriod = this.utils.getWorkingDays(startDate, endDate);
+    let calendarData = this.calendar.getData();
+    let result = [];
+    
+    for(let i = 0; i < watchPeriod.length; i++){
+      for(let j = 0; j < calendarData.length; j++){
+        if (!this.isCurrentUser(calendarData[j].userid)){
+          let values = calendarData[j].period.find(period  => 
+            this.utils.datesEqual(this.utils.period2Date(period.date),watchPeriod[i]));
+          if (values && 
+             (this.isClash(values.am) ||
+              this.isClash(values.pm))){
+            //clash detected
+            let level = this.getClashLevel(this.utils.datesDiffInDays(date, watchPeriod[i]));
+            result.push({
+              level: level,
+              yourDate: date,
+              userid: calendarData[j].userid,
+              date: watchPeriod[i],
+              am: values.am,
+              pm: values.pm
+            })
+          }
+        }
+      }
+    }    
+    return result;
+  }
 
+  getClashLevel(offset){
+    let level;
+      
+    for(let i = 0; i < this.clashLevels.length; i++){
+      if (offset <= this.clashLevels[i].days)
+        return this.clashLevels[i].level;  
+    }
+  }
+
+  displayClashes(clashLevel){
+    return this.clashes.filter(item => item.level === clashLevel.level);
+  }
+
+  isClash(value){
+    return (value === 'T' || value === 'V');
+  }
 
 }

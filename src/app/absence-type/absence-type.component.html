@@ -1,16 +1,16 @@
-<h4>2. Select type of absence:</h4>
+<h4>Type of absence:</h4>
 <div class="btn-group">
-  <button type='button' 
+  <button type='button' class='abs-type' 
           (click)='setAbsenceType("V")' 
           [class.active]='opt==="V"'
           id='vacation' 
           class='btn btn-info'>Vacation</button>
-  <button type='button' 
+  <button type='button' class='abs-type'
           (click)='setAbsenceType("T")' 
           [class.active]='opt==="T"'
           id='training' 
           class='btn btn-info'>Training</button>
-  <button type='button'
+  <button type='button' class='abs-type'
           (click)='setAbsenceType("")' 
           [class.active]='opt===""' 
           id='present'  

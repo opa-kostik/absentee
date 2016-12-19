@@ -39,7 +39,11 @@ export class UserService {
       this.currentUser = this.users.filter(item => item.userid == userid)[0];
     }
 
-    getUser(){
+    getCurrentUser(){
       return this.currentUser;
+    }
+
+    getUser(userid){
+      return this.users.filter(item => item.userid == userid)[0];
     }
 }

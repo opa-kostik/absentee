@@ -10,6 +10,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { AbsenceTypeComponent } from './absence-type/absence-type.component';
 import { CalendarService } from './calendar.service';
 import { UserService } from './user.service';
+import { Utils } from './utils.service';
 import { AbsenceTypeService } from './absence-type.service';
 
 
@@ -29,6 +30,7 @@ import { AbsenceTypeService } from './absence-type.service';
   providers: [
     CalendarService, 
     UserService,
+    Utils,
     AbsenceTypeService
   ],
   bootstrap: [AppComponent]

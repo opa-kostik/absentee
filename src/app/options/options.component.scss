@@ -1,5 +1,9 @@
 $labelWidth: 55px;
 
+.input-group{
+    width:90%;
+    margin:auto;
+}
 .input-group-addon{
     width: $labelWidth;
     max-width:$labelWidth;

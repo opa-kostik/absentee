@@ -6,6 +6,7 @@
     width: $menuWidth;
     max-width: $menuWidth;
     min-width: $menuWidth;
+    text-align: center;
 }
 .btn-group {
     position: relative;
@@ -15,6 +16,10 @@
 
 select{
     width:230px;
+}
+
+.menu-legend{
+    margin: 10px auto;
 }
 
 td{ 
@@ -41,5 +46,4 @@ td{
         border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px
     } 
-
 }

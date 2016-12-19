@@ -1,5 +1,5 @@
 
-<h4>3. Select display period:</h4>
+<h4>Select display period:</h4>
 <form (ngSubmit)="setPeriod()" #calendarForm="ngForm">
     <div class="form-group">
         <div class="input-group">
@@ -27,7 +27,7 @@
     </div>
     <div class="form-group set-period">
         <button type="submit" 
-                class="btn btn-lg btn-success"
+                class="btn btn-success"
                 [disabled]="!calendarForm.form.valid">
                 Proceed
         </button>

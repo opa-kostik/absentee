@@ -1,27 +1,37 @@
 @import '../menu/menu-base.scss';
 $table-border: 1px solid grey;
-$table_body_height: 500px;
+$table_body_height: 70vh;
 $column_one_width: 100px;
+$cell-size:15px;
 
 .form-group {
     margin-right: 30px;
 }
 
-table {
-    border-collapse: separate;
-    //1
-    table-layout: fixed;
-    //1
+.btn.clash {
+    margin: 10px;
 }
 
-//2
+span.clash-date {
+    margin: 0 5px;
+}
+
+div.card {
+    width: 60vw;
+}
+
+table {
+    border-collapse: separate;
+    table-layout: fixed;
+}
+
+
 thead {
     tr {
       display: block;
       position: relative;
     }
-  }
-//2
+}
 
 th.username {
     font-size: 10px;
@@ -35,13 +45,12 @@ th.username {
     }
 }
 
-//4
+
 tbody {
     display: block;
     overflow: auto;
     width: 100%;
     height: $table_body_height;
-//4
     &:before {
         content: "-";
         display: block;
@@ -61,10 +70,8 @@ td {
         font-size: 12px;
     }
     &.cell {
-        height: 15px;
-        width: 15px;
-        min-width:15px;
-        max-height:15px;
+        min-height: $cell-size;
+        min-width:$cell-size;
         margin: 0;
         padding: 0;
         border-bottom: $table-border;
@@ -79,4 +86,9 @@ td {
 
 td:nth-child(1), th:nth-child(1) { 
     min-width: $column_one_width; 
+}
+
+.btn.clash{
+    width: 150px;
+    min-width: 150px;
 }

@@ -15,11 +15,14 @@ export class MenuComponent implements OnInit {
     
   ngOnInit() {
     this.userList = this.userService.getUsers();
+    //Set default user
+    this.userService.setUser('3');
+    this.user = this.userService.getCurrentUser();
   }
 
   setUser(data){
     this.userService.setUser(data);
-    this.user = this.userService.getUser();
+    this.user = this.userService.getCurrentUser();
   }
 
   setPeriod(data){

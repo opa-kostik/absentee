@@ -1,13 +1,15 @@
-<div class='container-fluid'>
-  <h2>
-    {{title}}
-  </h2>
-  <div class='row'>
-    <div class='col-sm-4 col-md-3'>
-      <app-menu (periodUpdated)='setPeriod($event)'></app-menu>
-    </div>
-    <div class='col-sm-8 col-md-9'>
-      <app-calendar [period]='period'></app-calendar>
-    </div>
-  </div>
+<div class="menu">
+  <app-menu (periodUpdated)='setPeriod($event)'></app-menu>
+</div>
+<input  type="checkbox" 
+        [(ngModel)]='menuOpened' 
+        id="menu-toggle" 
+        name='menu-toggle' 
+        class="menu-toggle"/>
+<label for="menu-toggle">
+  <i *ngIf='menuOpened' class="fa fa-arrow-circle-left fa-2x" aria-hidden="true"></i>
+  <i *ngIf='!menuOpened' class="fa fa-arrow-circle-right fa-2x" aria-hidden="true"></i>
+</label>
+<div class="content-wrap">
+  <app-calendar [period]='period'></app-calendar>
 </div>
