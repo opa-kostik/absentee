@@ -24,6 +24,9 @@
                     Clashes of type <strong>"{{clashLevel.description}}"</strong>
                 </div>
                 <div class="card-block">
+                    <p *ngIf='!displayClashes(clashLevel) || displayClashes(clashLevel).length === 0'>
+                        There no clashes of this type.
+                    </p>
                     <ul>
                         <li *ngFor='let clash of displayClashes(clashLevel)'>
                             <strong>{{clash.yourDate | date:'dd-MMM-yyyy'}}</strong>
