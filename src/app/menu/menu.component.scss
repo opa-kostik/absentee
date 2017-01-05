@@ -1,7 +1,5 @@
 @import './menu-base.scss';
 
-
-
 .menu-bar {
     width: $menuWidth;
     max-width: $menuWidth;
@@ -16,34 +14,4 @@
 
 select{
     width:230px;
-}
-
-.menu-legend{
-    margin: 10px auto;
-}
-
-td{ 
-    width: 230px;
-    padding: 3px 10px;
-    &.available{
-        background-color: $presColor;
-        color:$vacColor;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-    }
-    &.vacation{
-        color: white;
-        background-color: $vacColor;
-    
-    }
-    &.training{
-        color: white;
-        background-color: $trainColor;
-    }
-    &.holiday{
-        color: white;
-        background-color: $holColor;
-        border-bottom-left-radius: 5px;
-        border-bottom-right-radius: 5px
-    } 
 }

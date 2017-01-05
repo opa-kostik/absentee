@@ -1,18 +1,23 @@
 <h4>Type of absence:</h4>
-<div class="btn-group">
+<div class="list-group">
   <button type='button' class='abs-type' 
           (click)='setAbsenceType("V")' 
           [class.active]='opt==="V"'
           id='vacation' 
-          class='btn btn-info'>Vacation</button>
+          class='list-group-item list-group-item-action'>Vacation</button>
   <button type='button' class='abs-type'
           (click)='setAbsenceType("T")' 
           [class.active]='opt==="T"'
           id='training' 
-          class='btn btn-info'>Training</button>
+          class='list-group-item list-group-item-action'>Training</button>
+  <button type='button' class='abs-type'
+          (click)='setAbsenceType("P")' 
+          [class.active]='opt==="P"'
+          id='holiday' 
+          class='list-group-item list-group-item-action'>Public hoiday</button>        
   <button type='button' class='abs-type'
           (click)='setAbsenceType("")' 
           [class.active]='opt===""' 
           id='present'  
-          class='btn btn-info'>Present</button>
+          class='list-group-item list-group-item-action'>Present</button>
 </div>

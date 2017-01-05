@@ -7,8 +7,8 @@
         name='menu-toggle' 
         class="menu-toggle"/>
 <label for="menu-toggle">
-  <i *ngIf='menuOpened' class="fa fa-arrow-circle-left fa-2x" aria-hidden="true"></i>
-  <i *ngIf='!menuOpened' class="fa fa-arrow-circle-right fa-2x" aria-hidden="true"></i>
+  <i *ngIf='menuOpened' class="fa fa-times fa-2x" aria-hidden="true"></i>
+  <i *ngIf='!menuOpened' class="fa fa-bars fa-2x" aria-hidden="true"></i>
 </label>
 <div class="content-wrap">
   <app-calendar [period]='period'></app-calendar>

@@ -1,0 +1,51 @@
+@import '../menu/menu-base.scss';
+
+button.abs-type {
+    outline: none;
+}
+
+#vacation{
+    outline: none;
+    border: none;
+    &:hover {
+        background-color: $vacColor;
+    }
+    &.active {
+        background-color: $vacColor;
+    }
+}
+
+#training{
+    outline: none;
+    border: none;
+    &:hover {
+        background-color: $trainColor;
+    }
+    &.active {
+        background-color: $trainColor;
+    }
+}
+
+#holiday{
+    outline: none;
+    border: none;
+    &:hover {
+        background-color: $holColor;
+    }
+    &.active {
+        background-color: $holColor;
+    }
+}
+
+#present{
+    outline: none;
+    border: none;
+    &:hover {
+        background-color: $presColor;
+        color: $vacColor;
+        }
+    &.active {
+        background-color: $presColor;
+        color: $vacColor;
+    }
+}

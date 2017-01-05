@@ -13,31 +13,12 @@
                 <strong>{{i.nick}}</strong> {{i.name}} 
           </option>
         </select>
-      </div>
       <hr>  
       <app-absence-type></app-absence-type>
       <hr>
       <div>
           <app-options (periodUpdated)=setPeriod($event)></app-options>
       </div>    
-      <hr>
-      
-      <h4>Info:</h4>
-      <div>
-        <table class='menu-legend'>
-          <tr>
-            <td class='available'>Present</td>
-          </tr>
-          <tr>
-            <td class='vacation'>Vacation</td>
-          </tr>
-          <tr>
-            <td class='training'>Training</td>
-          </tr>
-          <tr>
-            <td class='holiday'>Public holiday</td>
-          </tr>
-        </table>
-      </div>
+    </div>
   </div>        
 </div>

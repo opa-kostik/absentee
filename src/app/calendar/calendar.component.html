@@ -1,45 +1,5 @@
 <div class="dataTable" *ngIf='displayTable && displayTable.length > 0'>
-    <div>
-        <p>
-            <strong>Clashes</strong>
-            <button *ngFor='let clashLevel of clashLevels' 
-                    type='button' 
-                    class='btn clash' 
-                    [class.btn-danger]='clashLevel.level === "danger"'
-                    [class.btn-warning]='clashLevel.level === "warning"'
-                    [class.btn-info]='clashLevel.level === "info"'
-                    (click)='clashLevel.display = !clashLevel.display'>
-                    {{clashLevel.description}}
-                    <strong>
-                        <span class="pull-right">{{0 || displayClashes(clashLevel).length}}</span>
-                    </strong>    
-            </button>
-        </p>
-        <div *ngFor='let clashLevel of clashLevels'>
-            <div *ngIf='clashLevel.display' class="card">
-                <div class='card-header' 
-                    [class.bg-danger]='clashLevel.level === "danger"'
-                    [class.bg-warning]='clashLevel.level === "warning"'
-                    [class.bg-info]='clashLevel.level === "info"'>
-                    Clashes of type <strong>"{{clashLevel.description}}"</strong>
-                </div>
-                <div class="card-block">
-                    <p *ngIf='!displayClashes(clashLevel) || displayClashes(clashLevel).length === 0'>
-                        There no clashes of this type.
-                    </p>
-                    <ul>
-                        <li *ngFor='let clash of displayClashes(clashLevel)'>
-                            <strong>{{clash.yourDate | date:'dd-MMM-yyyy'}}</strong>
-                            : {{userService.getUser(clash.userid).name}} submitted absensce on  
-                            <span class='clash-date' *ngFor='let clashDate of clash.dates'> 
-                                {{clashDate | date:'dd-MMM-yyyy'}} 
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-            </div>    
-        </div>
-    </div>
+    <app-clash [clashes]='clashes'></app-clash>
     <table 
         cellspacing='0' 
         cellpadding='0'

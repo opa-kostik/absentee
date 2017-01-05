@@ -5,12 +5,14 @@ import { Period } from '../period';
 import { CalendarService } from '../calendar.service'
 import { UserService } from '../user.service'; 
 import { AbsenceTypeService } from '../absence-type.service';
+import { ClashService } from '../clash.service';
 import { Utils } from '../utils.service';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.scss']
+  styleUrls: ['./calendar.component.scss'],
+  providers: [ClashService]
 })
 export class CalendarComponent implements OnInit, OnChanges {
 
@@ -18,15 +20,16 @@ export class CalendarComponent implements OnInit, OnChanges {
   
   columns:Array<any>;
   calendar:Calendar;
-  clashes:Array<any>;
   displayTable;
   selection:Array<any>;
+  clashes:Array<any>;
   clashLevels;
 
   constructor(
     private calendarService:CalendarService,
     private userService:UserService,
     private utils:Utils,
+    private clashService:ClashService,
     private absenceTypeService:AbsenceTypeService) { 
   }  
   
@@ -39,11 +42,6 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.setColumns();
     this.selection = [];
     this.clashes = [];
-    this.clashLevels = [
-      {level:'danger',  days:0, display:false, description: "Same day"},
-      {level:'warning', days:1, display:false, description: "Adjacent"},
-      {level:'info',    days:4, display:false, description: "4 days"}
-    ];
   }
 
   setColumns(){
@@ -137,9 +135,11 @@ export class CalendarComponent implements OnInit, OnChanges {
             clash.yourDate === item.yourDate &&
             clash.userid === item.userid )
         });
-        if (index > -1)
-          this.clashes[index].dates.push(item.date);
-        else{  
+        if (index > -1){
+          if (!this.clashes[index].dates || 
+          this.clashes[index].dates.findIndex( clashDate => this.utils.datesEqual(clashDate,item.date)) < 0)
+            this.clashes[index].dates.push(item.date);
+        }else{  
           this.clashes.push({
             level:item.level, 
             yourDate: item.yourDate,
@@ -156,7 +156,7 @@ export class CalendarComponent implements OnInit, OnChanges {
     if(!this.calendar) return; 
     
     if(!this.isClash(cell.value)){
-      let thatDay = this.calendar.getCalLine(cell.userid).getPeriod(date);
+      let thatDay = this.calendar.getCalLine(cell.userid).getPeriod(this.utils.date2Period(date));
       if(cell.unit === 'AM' && !this.isClash(thatDay.pm) ||
          cell.unit === 'PM' && !this.isClash(thatDay.am) ){
         this.clashes = this.clashes.filter(item => item.yourDate !== date);
@@ -179,7 +179,7 @@ export class CalendarComponent implements OnInit, OnChanges {
              (this.isClash(values.am) ||
               this.isClash(values.pm))){
             //clash detected
-            let level = this.getClashLevel(this.utils.datesDiffInDays(date, watchPeriod[i]));
+            let level = this.clashService.getClashLevel(this.utils.datesDiffInDays(date, watchPeriod[i]));
             result.push({
               level: level,
               yourDate: date,
@@ -193,19 +193,6 @@ export class CalendarComponent implements OnInit, OnChanges {
       }
     }    
     return result;
-  }
-
-  getClashLevel(offset){
-    let level;
-      
-    for(let i = 0; i < this.clashLevels.length; i++){
-      if (offset <= this.clashLevels[i].days)
-        return this.clashLevels[i].level;  
-    }
-  }
-
-  displayClashes(clashLevel){
-    return this.clashes.filter(item => item.level === clashLevel.level);
   }
 
   isClash(value){

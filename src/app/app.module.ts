@@ -12,6 +12,7 @@ import { CalendarService } from './calendar.service';
 import { UserService } from './user.service';
 import { Utils } from './utils.service';
 import { AbsenceTypeService } from './absence-type.service';
+import { ClashComponent } from './clash/clash.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { AbsenceTypeService } from './absence-type.service';
     MenuComponent,
     OptionsComponent,
     CalendarComponent,
-    AbsenceTypeComponent
+    AbsenceTypeComponent,
+    ClashComponent
   ],
   imports: [
     BrowserModule,

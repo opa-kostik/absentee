@@ -13,3 +13,15 @@ $labelWidth: 55px;
 button {
     width: 100px;
 }
+
+button.btn.btn-success{
+    outline: none;
+}
+
+input#start {
+    outline: none;
+}
+
+input#end{
+    outline: none;
+}
